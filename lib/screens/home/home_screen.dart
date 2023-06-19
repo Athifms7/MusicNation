@@ -1,58 +1,82 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:musicnation/functions/fav_functions.dart';
+import 'package:musicnation/functions/fetch_songs.dart';
+import 'package:musicnation/screens/favourite/heart_icon.dart';
 
 import 'package:musicnation/screens/header.dart';
-import 'package:musicnation/screens/nav_bar.dart';
+import 'package:musicnation/screens/miniplayer.dart';
+import 'package:musicnation/screens/mostly_played.dart';
+import 'package:musicnation/screens/playlist/add_to_playlist.dart';
+import 'package:musicnation/screens/recently_played.dart';
+import 'package:musicnation/screens/search_screen.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-          preferredSize: Size.fromHeight(80),
-          child: Header(name: 'ALL SONGS', icon: Icons.search)),
+        preferredSize: const Size.fromHeight(80),
+        child: Header(
+            name: 'ALL SONGS', icon: Icons.search, className: SearchScreen()),
+      ),
       body: Container(
         width: double.infinity,
-        height: 603,
-        color: Color.fromRGBO(26, 29, 43, 1),
-        child: Column(children: [
-          MostlyAndRecently(
-            text: 'Recently Played',
-          ),
-          MostlyAndRecently(text: 'Mostly Played'),
-
-          Expanded(
-            child: ListView.separated(
-                itemBuilder: (context, index) => songList(),
-                separatorBuilder: (context, index) => SizedBox(
-                      height: 5,
-                    ),
-                itemCount: 20),
-          )
-          // songList()
-        ]),
+        height: double.infinity,
+        color: const Color.fromRGBO(26, 29, 43, 1),
+        child: Column(
+          children: [
+            RecentlyPlayed(text: 'Recently Played'),
+            MostlyPlayed(text: 'Mostly Played'),
+            Expanded(
+              child: ListView.separated(
+                itemBuilder: (context, index) => SongList(
+                  index: index,
+                ),
+                separatorBuilder: (context, index) => const SizedBox(
+                  height: 5,
+                ),
+                itemCount: allSongs.length,
+              ),
+            ),
+          ],
+        ),
       ),
-      bottomNavigationBar: NavBar(),
     );
   }
 }
 
-class songList extends StatelessWidget {
-  const songList({
-    super.key,
-  });
+class SongList extends StatelessWidget {
+  SongList({Key? key, required this.index}) : super(key: key);
+
+  int index;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        // Navigator.of(context).push(MaterialPageRoute(
+        //   builder: (context) {
+        //     return AudioPlayer();
+        //   },
+        // ));
+        showBottomSheet(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(20), bottom: Radius.circular(20))),
+          context: context,
+          builder: (context) {
+            return MiniPlayer();
+          },
+        );
+      },
       child: SizedBox(
         height: 90,
         child: Card(
-          color: Color.fromRGBO(31, 37, 61, 1),
+          color: const Color.fromRGBO(31, 37, 61, 1),
           child: Padding(
             padding: const EdgeInsets.only(top: 7),
             child: ListTile(
@@ -63,29 +87,37 @@ class songList extends StatelessWidget {
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: Image.network(
-                    'https://images.macrumors.com/t/oXm0mS5xSk3qsnYmUHxbKrlvgIM=/800x0/article-new/2018/04/apple-music-icon-for-ios-100594580-orig-250x250.jpg?lossy'),
+                  'https://images.macrumors.com/t/oXm0mS5xSk3qsnYmUHxbKrlvgIM=/800x0/article-new/2018/04/apple-music-icon-for-ios-100594580-orig-250x250.jpg?lossy',
+                ),
               ),
               title: Text(
-                'Payphone',
-                style: TextStyle(color: Colors.white, fontSize: 20),
+                allSongs[index].songname.toString(),
+                style: TextStyle(color: Colors.white, fontSize: 15),
               ),
-              subtitle: Text('maroon 5',
-                  style: TextStyle(color: Colors.white, fontSize: 15)),
+              subtitle: Text(
+                allSongs[index].artist.toString(),
+                style: TextStyle(color: Colors.white, fontSize: 12),
+              ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  HeartIcon(
+                      currentSong: allSongs[index],
+                      isFav:
+                          favoriteListNotifier.value.contains(allSongs[index])),
                   IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.favorite_border,
-                        color: Colors.white,
-                      )),
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.playlist_add,
-                        color: Colors.white,
-                      )),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) {
+                          return AddToPlaylist();
+                        },
+                      ));
+                    },
+                    icon: const Icon(
+                      Icons.playlist_add,
+                      color: Colors.white,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -96,22 +128,59 @@ class songList extends StatelessWidget {
   }
 }
 
-class MostlyAndRecently extends StatelessWidget {
+class MostlyPlayed extends StatelessWidget {
   final String text;
-  MostlyAndRecently({super.key, required this.text});
+  const MostlyPlayed({Key? key, required this.text}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) {
+            return MostlyScreen();
+          },
+        ));
+      },
       child: Card(
-        color: Color.fromRGBO(31, 37, 61, 1),
+        color: const Color.fromRGBO(31, 37, 61, 1),
         child: ListTile(
           title: Text(
             text,
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
-          trailing: Icon(
+          trailing: const Icon(
+            Icons.arrow_forward_ios,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class RecentlyPlayed extends StatelessWidget {
+  final String text;
+  const RecentlyPlayed({Key? key, required this.text}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) {
+            return RecentlyScreen();
+          },
+        ));
+      },
+      child: Card(
+        color: const Color.fromRGBO(31, 37, 61, 1),
+        child: ListTile(
+          title: Text(
+            text,
+            style: const TextStyle(color: Colors.white),
+          ),
+          trailing: const Icon(
             Icons.arrow_forward_ios,
             color: Colors.white,
           ),

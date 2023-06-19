@@ -1,10 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:musicnation/screens/playlist/list_playlist.dart';
+import 'package:musicnation/screens/playlist/playlist_screen.dart';
 
-class PlaylistScreen extends StatelessWidget {
-  const PlaylistScreen({Key? key}) : super(key: key);
+class AddToPlaylist extends StatelessWidget {
+  const AddToPlaylist({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class PlaylistScreen extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: HeaderAddToPlaylist(
-          name: 'PLAYLIST',
+          name: 'ADD TO PLAYLIST',
           icon: Icons.add_box_outlined,
         ),
       ),
@@ -106,48 +106,39 @@ class PlayListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) {
-            return ListPlaylist();
-          },
-        ));
-      },
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SizedBox(
-            width: 180,
-            height: 180,
-            child: Card(
-              color: Colors.blue,
-              elevation: 20,
-              semanticContainer: true,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: Column(children: [
-                Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    Image.network(
-                      'https://img.freepik.com/premium-vector/favourite-playlist-icon-songs-music-player-playlist-logo-vector-ui-icon-neumorphic-ui-ux-white-user-interface-web-button_399089-2894.jpg?w=740',
-                      fit: BoxFit.fill,
+    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      SizedBox(
+          width: 180,
+          height: 180,
+          child: Card(
+            color: Colors.blue,
+            elevation: 20,
+            semanticContainer: true,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            child: Column(children: [
+              Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  Image.network(
+                    'https://img.freepik.com/premium-vector/favourite-playlist-icon-songs-music-player-playlist-logo-vector-ui-icon-neumorphic-ui-ux-white-user-interface-web-button_399089-2894.jpg?w=740',
+                    fit: BoxFit.fill,
+                  ),
+                  Row(children: [
+                    Container(
+                      width: 120,
+                      height: 20,
+                      // color: Colors.amber,
+                      child: Center(child: Text('$playListName')),
                     ),
-                    Row(children: [
-                      Container(
-                        width: 120,
-                        height: 20,
-                        // color: Colors.amber,
-                        child: Center(child: Text('$playListName')),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.delete),
-                      ),
-                    ]),
-                  ],
-                ),
-              ]),
-            )),
-      ]),
-    );
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.delete),
+                    ),
+                  ]),
+                ],
+              ),
+            ]),
+          )),
+    ]);
   }
 }

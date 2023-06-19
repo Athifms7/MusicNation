@@ -1,41 +1,51 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:flutter/material.dart';
-
+import 'package:musicnation/functions/fav_functions.dart';
+import 'package:musicnation/screens/favourite/heart_icon.dart';
 import 'package:musicnation/screens/header.dart';
+import 'package:musicnation/screens/search_screen.dart';
 
 class FavouriteScreen extends StatelessWidget {
-  const FavouriteScreen({super.key});
+  const FavouriteScreen({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-          preferredSize: Size.fromHeight(80),
+        backgroundColor: Color.fromRGBO(26, 29, 43, 1),
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(80),
           child: Header(
-            name: 'FAVOURITE SONGS',
-            icon: Icons.add_box_outlined,
-          )),
-      body: Container(
-          width: double.infinity,
-          height: 603,
-          color: Color.fromRGBO(26, 29, 43, 1),
-          child: Expanded(
-            child: ListView.separated(
-                itemBuilder: (context, index) => songList(),
-                separatorBuilder: (context, index) => SizedBox(
-                      height: 5,
+              name: 'FAVOURITE SONGS',
+              icon: Icons.add_box_outlined,
+              className: SearchScreen()),
+        ),
+        body: ValueListenableBuilder(
+            valueListenable: favoriteListNotifier,
+            builder: (context, value, child) => (favoriteListNotifier
+                    .value.isNotEmpty)
+                ? Container(
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.height,
+                    color: const Color.fromRGBO(26, 29, 43, 1),
+                    child: ListView.separated(
+                      itemBuilder: (context, index) => SongList(index: index),
+                      separatorBuilder: (context, index) => const SizedBox(
+                        height: 5,
+                      ),
+                      itemCount: favoriteListNotifier.value.length,
                     ),
-                itemCount: 20),
-          )),
-    );
+                  )
+                : Center(
+                    child: Text(
+                      'No Favorites',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )));
   }
 }
 
-class songList extends StatelessWidget {
-  const songList({
-    super.key,
-  });
+class SongList extends StatelessWidget {
+  SongList({Key? key, required this.index});
+  int index;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +54,7 @@ class songList extends StatelessWidget {
       child: SizedBox(
         height: 90,
         child: Card(
-          color: Color.fromRGBO(31, 37, 61, 1),
+          color: const Color.fromRGBO(31, 37, 61, 1),
           child: Padding(
             padding: const EdgeInsets.only(top: 7),
             child: ListTile(
@@ -55,29 +65,30 @@ class songList extends StatelessWidget {
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: Image.network(
-                    'https://images.macrumors.com/t/oXm0mS5xSk3qsnYmUHxbKrlvgIM=/800x0/article-new/2018/04/apple-music-icon-for-ios-100594580-orig-250x250.jpg?lossy'),
+                  'https://images.macrumors.com/t/oXm0mS5xSk3qsnYmUHxbKrlvgIM=/800x0/article-new/2018/04/apple-music-icon-for-ios-100594580-orig-250x250.jpg?lossy',
+                ),
               ),
               title: Text(
-                'Payphone',
+                favoriteListNotifier.value[index].songname ?? 'unknown',
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ),
-              subtitle: Text('maroon 5',
-                  style: TextStyle(color: Colors.white, fontSize: 15)),
+              subtitle: Text(
+                favoriteListNotifier.value[index].artist ?? 'unknown',
+                style: TextStyle(color: Colors.white, fontSize: 15),
+              ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  HeartIcon(
+                      currentSong: favoriteListNotifier.value[index],
+                      isFav: true),
                   IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.favorite,
-                        color: Colors.white,
-                      )),
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.playlist_add,
-                        color: Colors.white,
-                      )),
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.playlist_add,
+                      color: Colors.white,
+                    ),
+                  ),
                 ],
               ),
             ),

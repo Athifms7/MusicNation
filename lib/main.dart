@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:musicnation/screens/home/home_screen.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:musicnation/model/favorite/fav_model.dart';
+
 import 'package:musicnation/screens/splash_screen.dart';
 
-void main(List<String> args) {
+void main(List<String> args) async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  if (!Hive.isAdapterRegistered(FavModelAdapter().typeId)) {
+    Hive.registerAdapter(FavModelAdapter());
+  }
+  // if(!Hive.isAdapterRegistered())
   runApp(MyApp());
 }
 
@@ -13,9 +21,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(fontFamily: 'DenkOne'),
+      theme: ThemeData(
+        fontFamily: 'DenkOne',
+      ),
       // home: SplashScreen(),
-      home: HomePage(),
+      home: SplashScreen(),
     );
   }
 }
